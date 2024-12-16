@@ -16,14 +16,17 @@
 
 import { CoinbaseCredentials } from '../credentials';
 import { USER_AGENT } from '../constants';
+import { CoinbaseHttpClient } from '../http/httpClient';
 import {
-  CoinbaseHttpClient,
   HttpClient,
   CoinbaseHttpRequestOptions,
   CoinbaseResponse,
-} from '../http/httpClient';
+} from '../http/options';
 
 export interface GenericClient {
+  /**
+   * Base URL for the API. e.g. 'https://api.prime.coinbase.com/v1/
+   */
   readonly apiBasePath: string;
   request(options: CoinbaseHttpRequestOptions): Promise<any>;
 }

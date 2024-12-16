@@ -15,20 +15,8 @@
  */
 import { AxiosHeaders, AxiosRequestConfig } from 'axios';
 import { CoinbaseCredentials } from '../credentials';
-import { TransformRequestFn, TransformResponseFn } from './httpClient';
-
-// TODO: document these well
-export interface CoinbaseCallOptions {
-  signal?: AbortSignal;
-  timeout?: number;
-  retryStatusCodes?: number[];
-  retries?: number;
-  retryCustomFunction?: (retryCount: number) => number;
-  retryDelay?: number;
-  retryExponential?: boolean;
-  transformRequest?: TransformRequestFn | TransformRequestFn[];
-  transformResponse?: TransformResponseFn | TransformResponseFn[];
-}
+import { DEFAULT_HTTP_TIMEOUT } from '../constants';
+import { CoinbaseCallOptions } from './options';
 
 export class CoinbaseHttpRequest {
   private credentials: CoinbaseCredentials | undefined;
@@ -43,7 +31,7 @@ export class CoinbaseHttpRequest {
   private fullUrl: string;
 
   constructor(
-    httpMethod: string,
+    method: string,
     apiBasePath: string,
     requestPath: string = '',
     credentials?: CoinbaseCredentials,
@@ -55,7 +43,7 @@ export class CoinbaseHttpRequest {
     const queryString = this.buildQueryString(queryParams);
     this.fullUrl = `${apiBasePath}${requestPath}${queryString}`;
 
-    this.method = httpMethod;
+    this.method = method;
     this.baseURL = apiBasePath;
     this.url = requestPath;
     this.callOptions = callOptions;
@@ -63,12 +51,12 @@ export class CoinbaseHttpRequest {
 
     const headers: AxiosHeaders = this.AddAuthHeader();
     this.requestOptions = {
-      method: httpMethod,
+      method,
       headers,
       url: requestPath,
       data: bodyParams,
       signal: callOptions?.signal,
-      timeout: callOptions?.timeout || 5000,
+      timeout: callOptions?.timeout || DEFAULT_HTTP_TIMEOUT,
     };
     this.headers = headers;
   }

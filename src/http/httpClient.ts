@@ -16,52 +16,15 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import { CoinbaseCredentials } from '../credentials';
+import { CoinbaseHttpRequest } from './coinbaseHttpRequest';
 import {
-  CoinbaseCallOptions,
-  CoinbaseHttpRequest,
-} from './coinbaseHttpRequest';
-
-export enum Method {
-  GET = 'GET',
-  PATCH = 'PATCH',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-}
-
-export type TransformRequestFn = (data: any, header: any) => any;
-export type TransformResponseFn = (data: any) => any;
-
-export interface CoinbaseHttpClientRetryOptions {
-  timeout?: number;
-  retryStatusCodes?: number[];
-  retries?: number;
-  retryDelay?: number;
-  retryExponential?: boolean;
-  retryCustomFunction?: (retryCount: number) => number;
-  transformRequest?: TransformRequestFn | TransformRequestFn[];
-  transformResponse?: TransformResponseFn | TransformResponseFn[];
-}
-
-export interface CoinbaseHttpRequestOptions {
-  url?: string;
-  method?: string | undefined;
-  queryParams?: Record<string, any>;
-  bodyParams?: Record<string, any>;
-  callOptions?: CoinbaseCallOptions;
-}
-
-export interface CoinbaseResponse<T = any> {
-  data: T;
-  status: number;
-  statusText: string;
-}
-
-export interface HttpClient {
-  sendRequest(options: CoinbaseHttpRequestOptions): Promise<CoinbaseResponse>;
-  transformRequest: TransformRequestFn | TransformRequestFn[];
-  transformResponse: TransformResponseFn | TransformResponseFn[];
-}
+  CoinbaseHttpClientRetryOptions,
+  CoinbaseHttpRequestOptions,
+  HttpClient,
+  Method,
+  TransformRequestFn,
+  TransformResponseFn,
+} from './options';
 
 export class CoinbaseHttpClient implements HttpClient {
   private credentials: CoinbaseCredentials | undefined;
@@ -93,7 +56,9 @@ export class CoinbaseHttpClient implements HttpClient {
     });
 
     if (options) {
-      if (options.retryDelay) {
+      if (options.retries) {
+        axiosRetry(axiosClient, { retries: options.retries });
+      } else if (options.retryDelay) {
         axiosRetry(axiosClient, {
           retryDelay: axiosRetry.linearDelay(options.retryDelay),
         });
@@ -108,19 +73,39 @@ export class CoinbaseHttpClient implements HttpClient {
       }
     }
 
+    const transformRequest = options?.transformRequest
+      ? Array.isArray(options.transformRequest)
+        ? (options.transformRequest as TransformRequestFn[])
+        : (options.transformRequest as TransformRequestFn)
+      : [];
+
+    if (Array.isArray(transformRequest)) {
+      transformRequest.forEach((transformer) => {
+        axiosClient.interceptors.request.use(transformer, null);
+      });
+    } else if (typeof transformRequest === 'function') {
+      axiosClient.interceptors.request.use(transformRequest, null);
+    }
+
+    const transformResponse = options?.transformResponse
+      ? Array.isArray(options.transformResponse)
+        ? (options.transformResponse as TransformResponseFn[])
+        : (options.transformResponse as TransformResponseFn)
+      : [];
+
+    if (Array.isArray(transformResponse)) {
+      transformResponse.forEach((transformer) => {
+        axiosClient.interceptors.response.use(transformer, null);
+      });
+    } else if (typeof transformResponse === 'function') {
+      axiosClient.interceptors.response.use(transformResponse, null);
+    }
+
     return {
       sendRequest: axiosClient.request,
       // stubs to allow for replacement
-      transformRequest: options?.transformRequest
-        ? Array.isArray(options.transformRequest)
-          ? (options.transformRequest as TransformRequestFn[])
-          : (options.transformRequest as TransformRequestFn)
-        : [],
-      transformResponse: options?.transformResponse
-        ? Array.isArray(options.transformResponse)
-          ? (options.transformResponse as TransformResponseFn[])
-          : (options.transformResponse as TransformResponseFn)
-        : [],
+      transformRequest,
+      transformResponse,
     };
   }
 
@@ -151,8 +136,8 @@ export class CoinbaseHttpClient implements HttpClient {
     }
   }
 
-  transformRequest(request: any, headers: any) {
-    return request;
+  transformRequest(config: any) {
+    return config;
   }
 
   transformResponse(response: any) {

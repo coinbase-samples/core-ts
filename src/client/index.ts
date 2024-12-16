@@ -29,7 +29,7 @@ export interface GenericClient {
    */
   readonly apiBasePath: string;
   request(options: CoinbaseHttpRequestOptions): Promise<any>;
-  AddHeader(key: string, value: string): void;
+  addHeader(key: string, value: string): void;
 }
 
 export class CoinbaseClient {
@@ -57,7 +57,7 @@ export class CoinbaseClient {
     return this.httpClient.sendRequest(options);
   }
 
-  AddHeader(key: string, value: string) {
-    this.httpClient.AddHeader(key, value);
+  addHeader(key: string, value: string) {
+    this.httpClient.addHeader(key, value);
   }
 }

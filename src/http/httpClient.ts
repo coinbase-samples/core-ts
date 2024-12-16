@@ -131,7 +131,7 @@ export class CoinbaseHttpClient implements HttpClient {
     }
   }
 
-  AddHeader(key: string, value: string) {
+  addHeader(key: string, value: string) {
     this.httpClient.defaults.headers[key] = value;
   }
 

@@ -82,7 +82,7 @@ export interface CoinbaseResponse<T = any> {
 
 export interface HttpClient {
   sendRequest(options: CoinbaseHttpRequestOptions): Promise<CoinbaseResponse>;
-  AddHeader(key: string, value: string): void;
+  addHeader(key: string, value: string): void;
   transformRequest: TransformRequestFn | TransformRequestFn[];
   transformResponse: TransformResponseFn | TransformResponseFn[];
 }

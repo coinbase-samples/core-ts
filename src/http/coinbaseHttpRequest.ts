@@ -49,7 +49,7 @@ export class CoinbaseHttpRequest {
     this.callOptions = callOptions;
     this.body = bodyParams;
 
-    const headers: AxiosHeaders = this.AddAuthHeader();
+    const headers: AxiosHeaders = this.addAuthHeader();
     this.requestOptions = {
       method,
       headers,
@@ -61,7 +61,7 @@ export class CoinbaseHttpRequest {
     this.headers = headers;
   }
 
-  AddAuthHeader() {
+  addAuthHeader() {
     const headers: AxiosHeaders = new AxiosHeaders();
     // sdk library responsibility to maintain public vs non-public endpoints
     if (this.credentials !== undefined) {
@@ -77,7 +77,7 @@ export class CoinbaseHttpRequest {
     return headers;
   }
 
-  AddHeader(key: string, value: string) {
+  addHeader(key: string, value: string) {
     if (!(this.requestOptions.headers instanceof AxiosHeaders)) {
       this.requestOptions.headers = new AxiosHeaders();
     }

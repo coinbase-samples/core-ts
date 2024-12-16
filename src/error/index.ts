@@ -35,23 +35,21 @@ export class CoinbaseClientException extends Error {
 }
 
 export function handleException(
-  response: CoinbaseResponse,
+  response: CoinbaseResponse | undefined,
   responseText: string,
   reason: string
 ) {
   let message: string | undefined;
 
-  if (
-    (400 <= response.status && response.status <= 499) ||
-    (500 <= response.status && response.status <= 599)
-  ) {
+  if (response?.status && 400 <= response.status && response.status <= 599) {
     if (
       response.status == 403 &&
       responseText.includes('"error_details":"Missing required scopes"')
     ) {
       message = `${response.status} Coinbase Error: Missing Required Scopes. Please verify your API keys include the necessary permissions.`;
-    } else
-      message = `${response.status} Coinbase Error: ${reason} ${responseText}`;
+    } else if ((response.status = 400)) {
+      message = `${response.status} Coinbase Invalid Request Error: ${reason} ${response?.data?.message}`;
+    } else message = `${response.status} Coinbase Error: ${reason}`;
 
     throw new CoinbaseError(message, response.status, response);
   }

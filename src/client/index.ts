@@ -21,6 +21,8 @@ import {
   HttpClient,
   CoinbaseHttpRequestOptions,
   CoinbaseResponse,
+  TransformRequestFn,
+  TransformResponseFn,
 } from '../http/options';
 
 export interface GenericClient {
@@ -30,9 +32,11 @@ export interface GenericClient {
   readonly apiBasePath: string;
   request(options: CoinbaseHttpRequestOptions): Promise<any>;
   addHeader(key: string, value: string): void;
+  addTransformRequest(func: TransformRequestFn): void;
+  addTransformResponse(func: TransformResponseFn): void;
 }
 
-export class CoinbaseClient {
+export class CoinbaseClient implements GenericClient {
   readonly apiBasePath: string;
   readonly userAgent: string;
   private httpClient: HttpClient;
@@ -59,5 +63,12 @@ export class CoinbaseClient {
 
   addHeader(key: string, value: string) {
     this.httpClient.addHeader(key, value);
+  }
+
+  addTransformRequest(func: TransformRequestFn): void {
+    this.httpClient.addTransformRequest(func);
+  }
+  addTransformResponse(func: TransformResponseFn): void {
+    this.httpClient.addTransformResponse(func);
   }
 }

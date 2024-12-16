@@ -24,7 +24,7 @@ export class CoinbaseHttpRequest {
   readonly method: string;
   readonly baseURL: string;
   readonly url: string;
-  readonly body: Record<string, any> | undefined;
+  readonly data: Record<string, any> | undefined;
   public headers: AxiosHeaders;
   readonly signal?: AbortSignal;
   public callOptions?: CoinbaseCallOptions;
@@ -47,7 +47,7 @@ export class CoinbaseHttpRequest {
     this.baseURL = apiBasePath;
     this.url = requestPath;
     this.callOptions = callOptions;
-    this.body = bodyParams;
+    this.data = bodyParams;
 
     const headers: AxiosHeaders = this.addAuthHeader();
     this.requestOptions = {
@@ -68,7 +68,7 @@ export class CoinbaseHttpRequest {
       const authHeaders = this.credentials.generateAuthHeaders(
         this.method,
         this.fullUrl,
-        this.body?.toString() || ''
+        JSON.stringify(this.data) || ''
       );
 
       headers.set(authHeaders);

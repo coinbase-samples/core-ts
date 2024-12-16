@@ -25,6 +25,7 @@ import {
   TransformRequestFn,
   TransformResponseFn,
 } from './options';
+import { handleException } from '../error';
 
 export class CoinbaseHttpClient implements HttpClient {
   private credentials: CoinbaseCredentials | undefined;
@@ -33,6 +34,8 @@ export class CoinbaseHttpClient implements HttpClient {
   private userAgent: string;
   private httpOptions?: CoinbaseHttpClientRetryOptions;
   private addedHeaders: Record<string, string> = {};
+  private addedRequestTransformers: TransformRequestFn[] = [];
+  private addedResponseTransformers: TransformResponseFn[] = [];
 
   constructor(
     apiBasePath: string,
@@ -83,9 +86,11 @@ export class CoinbaseHttpClient implements HttpClient {
     if (Array.isArray(transformRequest)) {
       transformRequest.forEach((transformer) => {
         axiosClient.interceptors.request.use(transformer, null);
+        this.addedRequestTransformers.push(transformer);
       });
     } else if (typeof transformRequest === 'function') {
       axiosClient.interceptors.request.use(transformRequest, null);
+      this.addedRequestTransformers.push(transformRequest);
     }
 
     const transformResponse = options?.transformResponse
@@ -97,15 +102,17 @@ export class CoinbaseHttpClient implements HttpClient {
     if (Array.isArray(transformResponse)) {
       transformResponse.forEach((transformer) => {
         axiosClient.interceptors.response.use(transformer, null);
+        this.addedResponseTransformers.push(transformer);
       });
     } else if (typeof transformResponse === 'function') {
       axiosClient.interceptors.response.use(transformResponse, null);
+      this.addedResponseTransformers.push(transformResponse);
     }
 
     return axiosClient;
   }
 
-  sendRequest(options: CoinbaseHttpRequestOptions): Promise<any> {
+  async sendRequest(options: CoinbaseHttpRequestOptions): Promise<any> {
     const { url, queryParams, bodyParams } = options;
     const requestMethod = (options.method as Method) || Method.GET;
 
@@ -119,6 +126,8 @@ export class CoinbaseHttpClient implements HttpClient {
       options.callOptions
     );
 
+    let client = this.httpClient;
+
     if (options.callOptions) {
       //Does this need a custom transformer?
       const combinedOptions = {
@@ -129,9 +138,17 @@ export class CoinbaseHttpClient implements HttpClient {
       Object.entries(this.addedHeaders).forEach(([key, value]) => {
         callSpecificClient.defaults.headers[key] = value;
       });
-      return callSpecificClient.request(cbRequest);
-    } else {
-      return this.httpClient.request(cbRequest);
+      client = callSpecificClient;
+    }
+
+    try {
+      const response = await client.request(cbRequest);
+      return response;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        handleException(error?.response, error.response?.data, error.message);
+      }
+      throw error;
     }
   }
 
@@ -140,11 +157,13 @@ export class CoinbaseHttpClient implements HttpClient {
     this.addedHeaders[key] = value;
   }
 
-  transformRequest(config: any) {
-    return config;
+  addTransformRequest(func: TransformRequestFn) {
+    this.addedRequestTransformers.push(func);
+    this.httpClient.interceptors.request.use(func, null);
   }
 
-  transformResponse(response: any) {
-    return response;
+  addTransformResponse(func: TransformResponseFn) {
+    this.addedResponseTransformers.push(func);
+    this.httpClient.interceptors.response.use(func, null);
   }
 }

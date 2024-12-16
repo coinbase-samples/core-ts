@@ -16,12 +16,12 @@
 export { CoinbaseClient } from './client';
 export { CoinbaseCredentials } from './credentials';
 export { CoinbaseError, CoinbaseClientException } from './error';
+export { CoinbaseHttpClient } from './http/httpClient';
 export {
-  CoinbaseHttpClient,
-  HttpClient,
-  Method,
+  CoinbaseCallOptions,
   CoinbaseHttpRequestOptions,
   CoinbaseResponse,
-} from './http/httpClient';
-export { CoinbaseCallOptions } from './http/coinbaseHttpRequest';
+  HttpClient,
+  Method,
+} from './http/options';
 export { JsonUtility } from './serialization/jsonUtility';

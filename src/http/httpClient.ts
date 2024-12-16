@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
 import { CoinbaseCredentials } from '../credentials';
 import { CoinbaseHttpRequest } from './coinbaseHttpRequest';
@@ -28,7 +28,7 @@ import {
 
 export class CoinbaseHttpClient implements HttpClient {
   private credentials: CoinbaseCredentials | undefined;
-  private httpClient: HttpClient;
+  private httpClient: AxiosInstance;
   private apiBasePath: string;
   private userAgent: string;
   private httpOptions?: CoinbaseHttpClientRetryOptions;
@@ -101,12 +101,7 @@ export class CoinbaseHttpClient implements HttpClient {
       axiosClient.interceptors.response.use(transformResponse, null);
     }
 
-    return {
-      sendRequest: axiosClient.request,
-      // stubs to allow for replacement
-      transformRequest,
-      transformResponse,
-    };
+    return axiosClient;
   }
 
   sendRequest(options: CoinbaseHttpRequestOptions): Promise<any> {
@@ -130,10 +125,14 @@ export class CoinbaseHttpClient implements HttpClient {
         ...options.callOptions,
       };
       const callSpecificClient = this._setupHttpClient(combinedOptions);
-      return callSpecificClient.sendRequest(cbRequest);
+      return callSpecificClient.request(cbRequest);
     } else {
-      return this.httpClient.sendRequest(cbRequest);
+      return this.httpClient.request(cbRequest);
     }
+  }
+
+  AddHeader(key: string, value: string) {
+    this.httpClient.defaults.headers[key] = value;
   }
 
   transformRequest(config: any) {

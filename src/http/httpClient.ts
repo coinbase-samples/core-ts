@@ -32,6 +32,7 @@ export class CoinbaseHttpClient implements HttpClient {
   private apiBasePath: string;
   private userAgent: string;
   private httpOptions?: CoinbaseHttpClientRetryOptions;
+  private addedHeaders: Record<string, string> = {};
 
   constructor(
     apiBasePath: string,
@@ -125,6 +126,9 @@ export class CoinbaseHttpClient implements HttpClient {
         ...options.callOptions,
       };
       const callSpecificClient = this._setupHttpClient(combinedOptions);
+      Object.entries(this.addedHeaders).forEach(([key, value]) => {
+        callSpecificClient.defaults.headers[key] = value;
+      });
       return callSpecificClient.request(cbRequest);
     } else {
       return this.httpClient.request(cbRequest);
@@ -133,6 +137,7 @@ export class CoinbaseHttpClient implements HttpClient {
 
   addHeader(key: string, value: string) {
     this.httpClient.defaults.headers[key] = value;
+    this.addedHeaders[key] = value;
   }
 
   transformRequest(config: any) {

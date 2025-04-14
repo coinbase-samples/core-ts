@@ -29,6 +29,7 @@ export class CoinbaseHttpRequest {
   readonly signal?: AbortSignal;
   public callOptions?: CoinbaseCallOptions;
   private fullUrl: string;
+  readonly params: URLSearchParams;
 
   constructor(
     method: string,
@@ -48,6 +49,7 @@ export class CoinbaseHttpRequest {
     this.url = requestPath;
     this.callOptions = callOptions;
     this.data = bodyParams;
+    this.params = new URLSearchParams(queryParams);
 
     const headers: AxiosHeaders = this.addAuthHeader();
     this.requestOptions = {
@@ -57,7 +59,6 @@ export class CoinbaseHttpRequest {
       data: bodyParams,
       signal: callOptions?.signal,
       timeout: callOptions?.timeout || DEFAULT_HTTP_TIMEOUT,
-      params: queryParams,
     };
     this.headers = headers;
   }

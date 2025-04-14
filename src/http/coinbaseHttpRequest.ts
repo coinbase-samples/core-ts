@@ -57,6 +57,7 @@ export class CoinbaseHttpRequest {
       data: bodyParams,
       signal: callOptions?.signal,
       timeout: callOptions?.timeout || DEFAULT_HTTP_TIMEOUT,
+      params: queryParams,
     };
     this.headers = headers;
   }
@@ -102,18 +103,8 @@ export class CoinbaseHttpRequest {
       return '';
     }
 
-    const queryString = Object.entries(queryParams)
-      .flatMap(([key, value]) => {
-        if (Array.isArray(value)) {
-          return value.map(
-            (item) => `${encodeURIComponent(key)}=${encodeURIComponent(item)}`
-          );
-        } else {
-          return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-        }
-      })
-      .join('&');
+    const params = new URLSearchParams(queryParams);
 
-    return `?${queryString}`;
+    return `?${params.toString()}`;
   }
 }

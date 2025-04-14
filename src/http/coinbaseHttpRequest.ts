@@ -29,6 +29,7 @@ export class CoinbaseHttpRequest {
   readonly signal?: AbortSignal;
   public callOptions?: CoinbaseCallOptions;
   private fullUrl: string;
+  readonly params: URLSearchParams;
 
   constructor(
     method: string,
@@ -48,6 +49,7 @@ export class CoinbaseHttpRequest {
     this.url = requestPath;
     this.callOptions = callOptions;
     this.data = bodyParams;
+    this.params = new URLSearchParams(queryParams);
 
     const headers: AxiosHeaders = this.addAuthHeader();
     this.requestOptions = {
@@ -102,18 +104,8 @@ export class CoinbaseHttpRequest {
       return '';
     }
 
-    const queryString = Object.entries(queryParams)
-      .flatMap(([key, value]) => {
-        if (Array.isArray(value)) {
-          return value.map(
-            (item) => `${encodeURIComponent(key)}=${encodeURIComponent(item)}`
-          );
-        } else {
-          return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-        }
-      })
-      .join('&');
+    const params = new URLSearchParams(queryParams);
 
-    return `?${queryString}`;
+    return `?${params.toString()}`;
   }
 }

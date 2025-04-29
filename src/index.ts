@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { CoinbaseClient } from './client';
+export { CoinbaseClient, GenericClient } from './client';
 export { CoinbaseCredentials } from './credentials';
 export { CoinbaseError, CoinbaseClientException } from './error';
 export { CoinbaseHttpClient } from './http/httpClient';
@@ -23,5 +23,11 @@ export {
   CoinbaseResponse,
   HttpClient,
   Method,
+  TransformRequestFn,
+  TransformResponseFn,
+  CoinbaseHttpClientRetryOptions,
 } from './http/options';
-export { JsonUtility } from './serialization/jsonUtility';
+export {
+  JsonUtility,
+  JsonSerializerOptions,
+} from './serialization/jsonUtility';

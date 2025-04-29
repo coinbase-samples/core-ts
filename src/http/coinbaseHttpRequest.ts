@@ -49,7 +49,7 @@ export class CoinbaseHttpRequest {
     this.url = requestPath;
     this.callOptions = callOptions;
     this.data = bodyParams;
-    this.params = new URLSearchParams(queryParams);
+    this.params = this.sanitizeParams(new URLSearchParams(queryParams));
 
     const headers: AxiosHeaders = this.addAuthHeader();
     this.requestOptions = {
@@ -104,8 +104,22 @@ export class CoinbaseHttpRequest {
       return '';
     }
 
-    const params = new URLSearchParams(queryParams);
+    const params = this.sanitizeParams(new URLSearchParams(queryParams));
 
     return `?${params.toString()}`;
+  }
+
+  sanitizeParams(params: URLSearchParams) {
+    const emptyParams: string[] = [];
+    params.forEach((value, key) => {
+      if (value == '') {
+        emptyParams.push(key);
+      }
+    });
+
+    emptyParams.forEach((key) => {
+      params.delete(key);
+    });
+    return params;
   }
 }

@@ -1,8 +1,9 @@
 {
   "name": "@coinbase-sample/core-ts",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Coinbase TS Core used by other libraries and examples",
   "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",

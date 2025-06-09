@@ -30,7 +30,9 @@ export interface GenericClient {
    * Base URL for the API. e.g. 'https://api.prime.coinbase.com/v1/
    */
   readonly apiBasePath: string;
-  request(options: CoinbaseHttpRequestOptions): Promise<any>;
+  request<T = any>(
+    options: CoinbaseHttpRequestOptions
+  ): Promise<CoinbaseResponse<T>>;
   addHeader(key: string, value: string): void;
   addTransformRequest(func: TransformRequestFn): void;
   addTransformResponse(func: TransformResponseFn): void;
@@ -47,9 +49,9 @@ export class CoinbaseClient implements GenericClient {
     userAgent?: string
   ) {
     this.apiBasePath = apiBasePath;
-    typeof userAgent === 'string' && userAgent.length > 0
-      ? (this.userAgent = userAgent)
-      : (this.userAgent = USER_AGENT);
+    if (typeof userAgent === 'string' && userAgent.length > 0)
+      this.userAgent = userAgent;
+    else this.userAgent = USER_AGENT;
     this.httpClient = new CoinbaseHttpClient(
       apiBasePath,
       this.userAgent,

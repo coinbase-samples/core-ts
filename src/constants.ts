@@ -16,3 +16,4 @@
 export const VERSION = '0.1.0';
 export const USER_AGENT: string = `coinbase-core-ts/${VERSION}`;
 export const DEFAULT_HTTP_TIMEOUT = 5000;
+export const DEFAULT_PAGINATION_LIMIT = 25;

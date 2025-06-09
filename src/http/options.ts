@@ -22,8 +22,11 @@ export interface CoinbaseHttpClientRetryOptions {
    */
   timeout?: number;
   /**
+   * A default limit when calling a paginated endpoint
+   */
+  defaultLimit?: number;
+  /**
    * A number of times to retry
-   *
    */
   retries?: number;
   /**
@@ -78,6 +81,10 @@ export interface CoinbaseResponse<T = any> {
    * HTTP status message
    */
   statusText: string;
+  /**
+   * HTTP headers
+   */
+  headers: Record<string, string>;
 }
 
 export interface HttpClient {
@@ -97,8 +104,15 @@ export interface CoinbaseCallOptions {
    */
   timeout?: number;
   /**
+   * A max number of pages to fetch when paginating
+   */
+  maxPages?: number;
+  /**
+   * A number of max items to fetch when paginating
+   */
+  maxItems?: number;
+  /**
    * A number of times to retry
-   *
    */
   retries?: number;
   /**

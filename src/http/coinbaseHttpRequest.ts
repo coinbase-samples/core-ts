@@ -50,7 +50,6 @@ export class CoinbaseHttpRequest {
     this.callOptions = callOptions;
     this.data = bodyParams;
     this.params = this.sanitizeParams(new URLSearchParams(queryParams));
-
     const headers: AxiosHeaders = this.addAuthHeader();
     this.requestOptions = {
       method,

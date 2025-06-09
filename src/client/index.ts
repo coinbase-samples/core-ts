@@ -37,6 +37,7 @@ export interface GenericClient {
   addHeader(key: string, value: string): void;
   addTransformRequest(func: TransformRequestFn): void;
   addTransformResponse(func: TransformResponseFn): void;
+  getDefaultPaginationLimit(): number;
 }
 
 export class CoinbaseClient implements GenericClient {
@@ -75,5 +76,9 @@ export class CoinbaseClient implements GenericClient {
   }
   addTransformResponse(func: TransformResponseFn): void {
     this.httpClient.addTransformResponse(func);
+  }
+
+  getDefaultPaginationLimit() {
+    return this.httpClient.getDefaultPaginationLimit();
   }
 }

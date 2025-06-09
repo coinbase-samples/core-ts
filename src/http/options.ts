@@ -24,7 +24,7 @@ export interface CoinbaseHttpClientRetryOptions {
   /**
    * A default limit when calling a paginated endpoint
    */
-  defaultLimit?: number;
+  defaultLimit: number;
   /**
    * A number of times to retry
    */
@@ -92,6 +92,7 @@ export interface HttpClient {
   addHeader(key: string, value: string): void;
   addTransformRequest(func: TransformRequestFn): void;
   addTransformResponse(func: TransformResponseFn): void;
+  getDefaultPaginationLimit(): number;
 }
 
 export interface CoinbaseCallOptions {

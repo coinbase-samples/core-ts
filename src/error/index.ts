@@ -48,7 +48,7 @@ export function handleException(
       responseText.includes('"error_details":"Missing required scopes"')
     ) {
       message = `${response.status} Coinbase Error: Missing Required Scopes. Please verify your API keys include the necessary permissions.`;
-    } else if ((response.status = 400)) {
+    } else if (response.status == 400) {
       message = `${response.status} Coinbase Invalid Request Error: ${reason} ${response?.data?.message}`;
     } else message = `${response.status} Coinbase Error: ${reason}`;
 

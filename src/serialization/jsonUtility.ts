@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface JsonUtility {
+export interface IJsonUtility {
   serialize(data: any): string;
   deserialize(data: string): any;
 }
@@ -23,7 +23,7 @@ export type JsonSerializerOptions = {
   space?: string | number;
 };
 
-export class JsonUtility implements JsonUtility {
+export class JsonUtility implements IJsonUtility {
   private options: JsonSerializerOptions;
 
   constructor(options?: JsonSerializerOptions) {

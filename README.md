@@ -2,7 +2,7 @@
 
 ## Overview
 
-_Coinbase Java TS_ is a library that is used by other Typescript samples
+_Coinbase TS Core_ is a library that is used by other Typescript sdks and samples
 
 ## License
 

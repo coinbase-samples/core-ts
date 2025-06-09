@@ -23,6 +23,7 @@ import {
   CoinbaseResponse,
   TransformRequestFn,
   TransformResponseFn,
+  CoinbaseHttpClientRetryOptions,
 } from '../http/options';
 
 export interface GenericClient {
@@ -30,10 +31,15 @@ export interface GenericClient {
    * Base URL for the API. e.g. 'https://api.prime.coinbase.com/v1/
    */
   readonly apiBasePath: string;
-  request(options: CoinbaseHttpRequestOptions): Promise<any>;
+  request<T = any>(
+    options: CoinbaseHttpRequestOptions
+  ): Promise<CoinbaseResponse<T>>;
   addHeader(key: string, value: string): void;
   addTransformRequest(func: TransformRequestFn): void;
   addTransformResponse(func: TransformResponseFn): void;
+  getDefaultPaginationLimit(): number;
+  getMaxPages(): number;
+  getMaxItems(): number;
 }
 
 export class CoinbaseClient implements GenericClient {
@@ -44,16 +50,18 @@ export class CoinbaseClient implements GenericClient {
   constructor(
     apiBasePath: string,
     credentials?: CoinbaseCredentials,
-    userAgent?: string
+    userAgent?: string,
+    options?: CoinbaseHttpClientRetryOptions
   ) {
     this.apiBasePath = apiBasePath;
-    typeof userAgent === 'string' && userAgent.length > 0
-      ? (this.userAgent = userAgent)
-      : (this.userAgent = USER_AGENT);
+    if (typeof userAgent === 'string' && userAgent.length > 0)
+      this.userAgent = userAgent;
+    else this.userAgent = USER_AGENT;
     this.httpClient = new CoinbaseHttpClient(
       apiBasePath,
       this.userAgent,
-      credentials
+      credentials,
+      options
     );
   }
 
@@ -70,5 +78,17 @@ export class CoinbaseClient implements GenericClient {
   }
   addTransformResponse(func: TransformResponseFn): void {
     this.httpClient.addTransformResponse(func);
+  }
+
+  getDefaultPaginationLimit() {
+    return this.httpClient.getDefaultPaginationLimit();
+  }
+
+  getMaxPages() {
+    return this.httpClient.getMaxPages();
+  }
+
+  getMaxItems() {
+    return this.httpClient.getMaxItems();
   }
 }

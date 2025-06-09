@@ -28,6 +28,7 @@ export {
   CoinbaseHttpClientRetryOptions,
 } from './http/options';
 export {
+  IJsonUtility,
   JsonUtility,
   JsonSerializerOptions,
 } from './serialization/jsonUtility';

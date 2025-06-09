@@ -20,19 +20,25 @@ import { CoinbaseHttpRequest } from './coinbaseHttpRequest';
 import {
   CoinbaseHttpClientRetryOptions,
   CoinbaseHttpRequestOptions,
+  CoinbaseResponse,
   HttpClient,
   Method,
   TransformRequestFn,
   TransformResponseFn,
 } from './options';
 import { handleException } from '../error';
+import {
+  DEFAULT_PAGINATION_LIMIT,
+  DEFAULT_PAGINATION_MAX_ITEMS,
+  DEFAULT_PAGINATION_MAX_PAGES,
+} from '../constants';
 
 export class CoinbaseHttpClient implements HttpClient {
   private credentials: CoinbaseCredentials | undefined;
   private httpClient: AxiosInstance;
   private apiBasePath: string;
   private userAgent: string;
-  private httpOptions?: CoinbaseHttpClientRetryOptions;
+  private httpOptions: CoinbaseHttpClientRetryOptions;
   private addedHeaders: Record<string, string> = {};
   private addedRequestTransformers: TransformRequestFn[] = [];
   private addedResponseTransformers: TransformResponseFn[] = [];
@@ -46,6 +52,16 @@ export class CoinbaseHttpClient implements HttpClient {
     this.apiBasePath = apiBasePath;
     this.userAgent = userAgent;
     this.credentials = credentials;
+    if (!options) {
+      options = {
+        defaultLimit: DEFAULT_PAGINATION_LIMIT,
+        maxPages: DEFAULT_PAGINATION_MAX_PAGES,
+        maxItems: DEFAULT_PAGINATION_MAX_ITEMS,
+      };
+    }
+    if (!options.defaultLimit) options.defaultLimit = DEFAULT_PAGINATION_LIMIT;
+    if (!options.maxPages) options.maxPages = DEFAULT_PAGINATION_MAX_PAGES;
+    if (!options.maxItems) options.maxItems = DEFAULT_PAGINATION_MAX_ITEMS;
     this.httpOptions = options;
     this.httpClient = this._setupHttpClient(options);
   }
@@ -112,7 +128,9 @@ export class CoinbaseHttpClient implements HttpClient {
     return axiosClient;
   }
 
-  async sendRequest(options: CoinbaseHttpRequestOptions): Promise<any> {
+  async sendRequest<T = any>(
+    options: CoinbaseHttpRequestOptions
+  ): Promise<CoinbaseResponse<T>> {
     const { url, queryParams, bodyParams } = options;
     const requestMethod = (options.method as Method) || Method.GET;
 
@@ -143,10 +161,17 @@ export class CoinbaseHttpClient implements HttpClient {
 
     try {
       const response = await client.request(cbRequest);
-      return response;
+      if (response?.headers && typeof response.headers.toJSON === 'function') {
+        response.headers = response.headers.toJSON();
+      }
+      return response as CoinbaseResponse<T>;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        handleException(error?.response, error.response?.data, error.message);
+        handleException(
+          error?.response as CoinbaseResponse<T>,
+          error.response?.data,
+          error.message
+        );
       }
       throw error;
     }
@@ -165,5 +190,17 @@ export class CoinbaseHttpClient implements HttpClient {
   addTransformResponse(func: TransformResponseFn) {
     this.addedResponseTransformers.push(func);
     this.httpClient.interceptors.response.use(func, null);
+  }
+
+  getDefaultPaginationLimit() {
+    return this.httpOptions.defaultLimit;
+  }
+
+  getMaxPages() {
+    return this.httpOptions.maxPages;
+  }
+
+  getMaxItems() {
+    return this.httpOptions.maxItems;
   }
 }

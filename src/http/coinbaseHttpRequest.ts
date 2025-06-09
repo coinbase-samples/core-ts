@@ -111,7 +111,13 @@ export class CoinbaseHttpRequest {
   sanitizeParams(params: URLSearchParams) {
     const emptyParams: string[] = [];
     params.forEach((value, key) => {
-      if (value == '') {
+      if (
+        value == '' ||
+        value == null ||
+        value == undefined ||
+        value == 'null' ||
+        value == 'undefined'
+      ) {
         emptyParams.push(key);
       }
     });

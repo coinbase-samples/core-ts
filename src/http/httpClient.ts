@@ -27,7 +27,7 @@ import {
   TransformResponseFn,
 } from './options';
 import { handleException } from '../error';
-import { DEFAULT_PAGINATION_LIMIT } from 'src/constants';
+import { DEFAULT_PAGINATION_LIMIT } from '../constants';
 
 export class CoinbaseHttpClient implements HttpClient {
   private credentials: CoinbaseCredentials | undefined;

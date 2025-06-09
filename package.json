@@ -1,6 +1,6 @@
 {
   "name": "@coinbase-sample/core-ts",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Coinbase TS Core used by other libraries and examples",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -21,11 +21,11 @@
   },
   "homepage": "https://github.com/coinbase-samples/core-ts#readme",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.31.1",
-    "@typescript-eslint/parser": "^8.31.1",
-    "eslint": "^9.25.1",
-    "eslint-config-prettier": "^10.1.2",
-    "eslint-plugin-prettier": "^5.2.6",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.1",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3"
   },

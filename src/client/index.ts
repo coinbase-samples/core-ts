@@ -23,6 +23,7 @@ import {
   CoinbaseResponse,
   TransformRequestFn,
   TransformResponseFn,
+  CoinbaseHttpClientRetryOptions,
 } from '../http/options';
 
 export interface GenericClient {
@@ -46,7 +47,8 @@ export class CoinbaseClient implements GenericClient {
   constructor(
     apiBasePath: string,
     credentials?: CoinbaseCredentials,
-    userAgent?: string
+    userAgent?: string,
+    options?: CoinbaseHttpClientRetryOptions
   ) {
     this.apiBasePath = apiBasePath;
     if (typeof userAgent === 'string' && userAgent.length > 0)
@@ -55,7 +57,8 @@ export class CoinbaseClient implements GenericClient {
     this.httpClient = new CoinbaseHttpClient(
       apiBasePath,
       this.userAgent,
-      credentials
+      credentials,
+      options
     );
   }
 

@@ -27,7 +27,11 @@ import {
   TransformResponseFn,
 } from './options';
 import { handleException } from '../error';
-import { DEFAULT_PAGINATION_LIMIT } from '../constants';
+import {
+  DEFAULT_PAGINATION_LIMIT,
+  DEFAULT_PAGINATION_MAX_ITEMS,
+  DEFAULT_PAGINATION_MAX_PAGES,
+} from '../constants';
 
 export class CoinbaseHttpClient implements HttpClient {
   private credentials: CoinbaseCredentials | undefined;
@@ -51,10 +55,13 @@ export class CoinbaseHttpClient implements HttpClient {
     if (!options) {
       options = {
         defaultLimit: DEFAULT_PAGINATION_LIMIT,
+        maxPages: DEFAULT_PAGINATION_MAX_PAGES,
+        maxItems: DEFAULT_PAGINATION_MAX_ITEMS,
       };
-    } else if (!options.defaultLimit) {
-      options.defaultLimit = DEFAULT_PAGINATION_LIMIT;
     }
+    if (!options.defaultLimit) options.defaultLimit = DEFAULT_PAGINATION_LIMIT;
+    if (!options.maxPages) options.maxPages = DEFAULT_PAGINATION_MAX_PAGES;
+    if (!options.maxItems) options.maxItems = DEFAULT_PAGINATION_MAX_ITEMS;
     this.httpOptions = options;
     this.httpClient = this._setupHttpClient(options);
   }
@@ -184,5 +191,13 @@ export class CoinbaseHttpClient implements HttpClient {
 
   getDefaultPaginationLimit() {
     return this.httpOptions.defaultLimit;
+  }
+
+  getMaxPages() {
+    return this.httpOptions.maxPages;
+  }
+
+  getMaxItems() {
+    return this.httpOptions.maxItems;
   }
 }

@@ -26,6 +26,14 @@ export interface CoinbaseHttpClientRetryOptions {
    */
   defaultLimit: number;
   /**
+   * A max number of pages to fetch when paginating
+   */
+  maxPages: number;
+  /**
+   * A max number of items to fetch when paginating
+   */
+  maxItems: number;
+  /**
    * A number of times to retry
    */
   retries?: number;
@@ -93,6 +101,8 @@ export interface HttpClient {
   addTransformRequest(func: TransformRequestFn): void;
   addTransformResponse(func: TransformResponseFn): void;
   getDefaultPaginationLimit(): number;
+  getMaxPages(): number;
+  getMaxItems(): number;
 }
 
 export interface CoinbaseCallOptions {

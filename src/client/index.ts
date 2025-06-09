@@ -38,6 +38,8 @@ export interface GenericClient {
   addTransformRequest(func: TransformRequestFn): void;
   addTransformResponse(func: TransformResponseFn): void;
   getDefaultPaginationLimit(): number;
+  getMaxPages(): number;
+  getMaxItems(): number;
 }
 
 export class CoinbaseClient implements GenericClient {
@@ -80,5 +82,13 @@ export class CoinbaseClient implements GenericClient {
 
   getDefaultPaginationLimit() {
     return this.httpClient.getDefaultPaginationLimit();
+  }
+
+  getMaxPages() {
+    return this.httpClient.getMaxPages();
+  }
+
+  getMaxItems() {
+    return this.httpClient.getMaxItems();
   }
 }

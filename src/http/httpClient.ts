@@ -161,6 +161,9 @@ export class CoinbaseHttpClient implements HttpClient {
 
     try {
       const response = await client.request(cbRequest);
+      if (response?.headers && typeof response.headers.toJSON === 'function') {
+        response.headers = response.headers.toJSON();
+      }
       return response as CoinbaseResponse<T>;
     } catch (error) {
       if (axios.isAxiosError(error)) {

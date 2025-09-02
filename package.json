@@ -1,6 +1,6 @@
 {
   "name": "@coinbase-sample/core-ts",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Coinbase TS Core used by other libraries and examples",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",

@@ -1,4 +1,4 @@
-# Security Policy for cb-mpc
+# Security Policy for core-ts
 
 ## Reporting a Security Bug
 

@@ -156,6 +156,15 @@ export class CoinbaseHttpClient implements HttpClient {
       Object.entries(this.addedHeaders).forEach(([key, value]) => {
         callSpecificClient.defaults.headers[key] = value;
       });
+
+      // Apply any transformers that were added to the main client
+      this.addedResponseTransformers.forEach((transformer) => {
+        callSpecificClient.interceptors.response.use(transformer, null);
+      });
+      this.addedRequestTransformers.forEach((transformer) => {
+        callSpecificClient.interceptors.request.use(transformer, null);
+      });
+
       client = callSpecificClient;
     }
 

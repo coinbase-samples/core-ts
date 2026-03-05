@@ -49,7 +49,7 @@ export class CoinbaseHttpRequest {
     this.url = requestPath;
     this.callOptions = callOptions;
     this.data = bodyParams;
-    this.params = this.sanitizeParams(new URLSearchParams(queryParams));
+    this.params = this.sanitizeParams(this.buildURLSearchParams(queryParams));
     const headers: AxiosHeaders = this.addAuthHeader();
     this.requestOptions = {
       method,
@@ -98,26 +98,68 @@ export class CoinbaseHttpRequest {
     return filteredParams;
   }
 
+  private isValidValue(value: any): boolean {
+    return (
+      value !== undefined &&
+      value !== null &&
+      value !== '' &&
+      value !== 'null' &&
+      value !== 'undefined'
+    );
+  }
+
+  private buildURLSearchParams(
+    queryParams?: Record<string, any>
+  ): URLSearchParams {
+    const params = new URLSearchParams();
+
+    if (!queryParams) {
+      return params;
+    }
+
+    // Manually handle each parameter to support arrays
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (Array.isArray(value)) {
+        // Add each array element as a separate parameter with the same key
+        value.forEach((item) => {
+          if (this.isValidValue(item)) {
+            params.append(key, String(item));
+          }
+        });
+      } else if (this.isValidValue(value)) {
+        // Handle string values that might be comma-separated
+        const stringValue = String(value);
+        if (stringValue.includes(',')) {
+          // Split comma-separated values and add each as a separate parameter
+          stringValue.split(',').forEach((item) => {
+            const trimmedItem = item.trim();
+            if (trimmedItem) {
+              params.append(key, trimmedItem);
+            }
+          });
+        } else {
+          params.append(key, stringValue);
+        }
+      }
+    }
+
+    return params;
+  }
+
   buildQueryString(queryParams?: Record<string, any>): string {
     if (!queryParams || Object.keys(queryParams).length === 0) {
       return '';
     }
 
-    const params = this.sanitizeParams(new URLSearchParams(queryParams));
-
-    return `?${params.toString()}`;
+    const params = this.buildURLSearchParams(queryParams);
+    const sanitizedParams = this.sanitizeParams(params);
+    return `?${sanitizedParams.toString()}`;
   }
 
   sanitizeParams(params: URLSearchParams) {
     const emptyParams: string[] = [];
     params.forEach((value, key) => {
-      if (
-        value == '' ||
-        value == null ||
-        value == undefined ||
-        value == 'null' ||
-        value == 'undefined'
-      ) {
+      if (!this.isValidValue(value)) {
         emptyParams.push(key);
       }
     });

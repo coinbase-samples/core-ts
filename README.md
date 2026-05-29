@@ -1,15 +1,14 @@
 # Coinbase TS Core
 
-> **Deprecated:** This package has moved to [`@coinbase/core-ts`](https://www.npmjs.com/package/@coinbase/core-ts).
-> Install the new package instead:
->
-> ```bash
-> npm install @coinbase/core-ts@^0.4.0
-> ```
-
 ## Overview
 
 _Coinbase TS Core_ is a library that is used by other Typescript sdks and samples
+
+## Install
+
+```bash
+npm install @coinbase/core-ts
+```
 
 ## License
 

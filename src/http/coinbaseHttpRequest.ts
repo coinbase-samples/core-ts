@@ -18,6 +18,8 @@ import { CoinbaseCredentials } from '../credentials';
 import { DEFAULT_HTTP_TIMEOUT } from '../constants';
 import { CoinbaseCallOptions } from './options';
 
+type AxiosHeadersInstance = InstanceType<typeof AxiosHeaders>;
+
 export class CoinbaseHttpRequest {
   private credentials: CoinbaseCredentials | undefined;
   private requestOptions: AxiosRequestConfig;
@@ -25,7 +27,7 @@ export class CoinbaseHttpRequest {
   readonly baseURL: string;
   readonly url: string;
   readonly data: Record<string, any> | undefined;
-  public headers: AxiosHeaders;
+  public headers: AxiosHeadersInstance;
   readonly signal?: AbortSignal;
   public callOptions?: CoinbaseCallOptions;
   private fullUrl: string;
@@ -50,7 +52,7 @@ export class CoinbaseHttpRequest {
     this.callOptions = callOptions;
     this.data = bodyParams;
     this.params = this.sanitizeParams(this.buildURLSearchParams(queryParams));
-    const headers: AxiosHeaders = this.addAuthHeader();
+    const headers: AxiosHeadersInstance = this.addAuthHeader();
     this.requestOptions = {
       method,
       headers,
@@ -63,7 +65,7 @@ export class CoinbaseHttpRequest {
   }
 
   addAuthHeader() {
-    const headers: AxiosHeaders = new AxiosHeaders();
+    const headers: AxiosHeadersInstance = new AxiosHeaders();
     // sdk library responsibility to maintain public vs non-public endpoints
     if (this.credentials !== undefined) {
       const authHeaders = this.credentials.generateAuthHeaders(
@@ -83,7 +85,7 @@ export class CoinbaseHttpRequest {
       this.requestOptions.headers = new AxiosHeaders();
     }
     this.requestOptions.headers.append(key, value);
-    this.headers = this.requestOptions.headers as AxiosHeaders;
+    this.headers = this.requestOptions.headers as AxiosHeadersInstance;
   }
 
   filterParams(data: Record<string, any>) {
